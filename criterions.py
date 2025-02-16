@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-def gini(y): # when you change data to y remove labels and just keep y
+def gini(y):
     _, counts = np.unique(y, return_counts=True)
     total_count = len(y)
     p = counts / total_count

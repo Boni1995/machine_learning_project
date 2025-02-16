@@ -16,39 +16,35 @@ class RandomizedSearchCV:
         self.seed = seed
         self.n_jobs = n_jobs
         self.best_params = None
-        self.best_score = -1  # Inicializa correctamente
+        self.best_score = -1
 
         if self.seed:
             np.random.seed(self.seed)
 
-    def evaluate_fold(self, params, i): # Añadido self
+    def evaluate_fold(self, params, i):
         """Evaluates a single fold of cross-validation."""
         x_train_fold, x_val_fold, y_train_fold, y_val_fold = split(self.x_train, self.y_train, test_size=1/self.cv,
                                                                     seed = i)
 
-        # Initialize the tree with the selected parameters
         tree = DecisionTree(**params)
         tree.fit(x_train_fold, y_train_fold)
         y_pred = tree.predict(x_val_fold)
 
-        # Compute the accuracy
         return np.mean(y_val_fold == y_pred)
 
 
-    def fit(self): # Nueva función fit
+    def fit(self):
         for _ in range(self.n_iter):
-            # Sample a random parameter set
+
             params = {key: random.choice(values) for key, values in self.param_grid.items()}
 
-            # Run cross-validation
             scores = Parallel(n_jobs=self.n_jobs)(
-                delayed(self.evaluate_fold)(params, i) for i in range(self.cv) # Añadido self
+                delayed(self.evaluate_fold)(params, i) for i in range(self.cv)
             )
             mean_score = np.mean(scores)
 
-            # Update the best parameters if better
-            if mean_score > self.best_score: # Usar self.best_score
-                self.best_score = mean_score # Usar self.best_score
+            if mean_score > self.best_score:
+                self.best_score = mean_score
                 self.best_params = params
 
-        return self.best_params, self.best_score # Retornar las variables de instancia
+        return self.best_params, self.best_score

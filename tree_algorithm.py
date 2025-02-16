@@ -46,8 +46,7 @@ class DecisionTree:
                     local_best_threshold = threshold
 
             return feature, local_best_threshold, local_best_score
-
-        # Use joblib's Parallel and delayed to parallelize the loop
+        
         results = Parallel(n_jobs=-1)(delayed(evaluate_split)(feature) for feature in range(n))
 
         for feature, threshold, score in results:
